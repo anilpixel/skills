@@ -21,7 +21,7 @@ Use the reference spec as the source of truth for the `WORKFLOW.md` contract, es
 Read the repo's existing configuration before asking questions:
 
 - `references/symphony-service-spec.md` — use Sections 5 and 6 for the workflow contract, and Section 18 as a reminder of which guarantees belong to the runtime rather than this skill.
-- `docs/agents/issue-tracker.md` — confirm the project issue tracker is Linear.
+- `docs/agents/issue-tracker.md`, if present — confirm the project issue tracker is Linear and preserve its issue-publishing conventions.
 - `docs/agents/triage-labels.md` — understand agent-facing role and label conventions.
 - `WORKFLOW.md` at the repo root — parse YAML front matter separately from the prompt body.
 - `AGENTS.md` and `CLAUDE.md` — look for existing agent workflow instructions.
@@ -49,7 +49,7 @@ Ask only for values that are missing or ambiguous. Confirm:
 - Workspace root and workspace preparation hooks, if this repo needs checkout/sync/population behavior.
 - Agent concurrency, max turns, and retry backoff, if different from runtime defaults.
 - Codex command, approval policy, sandbox policy, turn timeout, read timeout, and stall timeout, if the repo needs explicit values.
-- User-input handling policy for unattended runs. Record this in the prompt body or optional agent-facing summary unless the project has a documented workflow extension field for it.
+- User-input handling policy for unattended runs. Record this in the prompt body unless the project has a documented workflow extension field for it.
 
 Do not ask for PRD/AFK/HITL labels unless the repo already uses that taxonomy in `docs/agents/triage-labels.md`, existing Linear labels, or user-provided instructions. Those labels are project conventions for prompts and ticket writing; they are not core dispatch gates unless a documented workflow extension implements label filtering.
 
@@ -126,58 +126,13 @@ codex:
 
 Do not write placeholder optional values into `WORKFLOW.md` as if they were real configuration. Use the optional block as a prompt for collecting concrete values.
 
-### 4. Write Optional Agent-Facing Summary
-
-If useful, create or update `docs/agents/workflow.md` as a summary of the actual `WORKFLOW.md` contract. This file is documentation only and must not be described as the runtime contract.
-
-Use this structure:
-
-```markdown
-# Workflow
-
-## Runtime Contract
-
-- Runtime file: `WORKFLOW.md`
-- Status: present | absent | explicit path: <path>
-- Prompt body: present | empty
-
-## Tracker Runtime Config
-
-- `tracker.kind`: linear
-- `tracker.project_slug`: <Linear project slugId>
-- `tracker.active_states`: <states dispatched by the runner>
-- `tracker.terminal_states`: <states that stop work and allow terminal cleanup>
-
-## Handoff
-
-- Handoff states: <workflow-defined states, if any>
-- Terminal states are cleanup states; handoff states are agent completion or review states unless configured otherwise.
-
-## Run Policy
-
-- Approval policy: <configured or implementation-defined>
-- Sandbox policy: <configured or implementation-defined>
-- User input during unattended runs: <policy>
-
-## Workspace Preparation
-
-- `workspace.root`: <configured value or runtime default>
-- Hooks: <summary of after_create/before_run/after_run/before_remove>
-```
-
-If `WORKFLOW.md` is missing, the summary must say that dispatch requires `WORKFLOW.md` and that `docs/agents/workflow.md` is not a substitute.
-
-### 5. Update References
-
-If needed, add a short pointer in `docs/agents/issue-tracker.md`:
-
-```markdown
-For unattended runner configuration, see the repository `WORKFLOW.md`. For an agent-facing summary, see `docs/agents/workflow.md` if present.
-```
+### 4. Update References
 
 If needed, add project-specific tracker expressions to `docs/agents/triage-labels.md`, but do not replace the canonical triage roles. Workflow-specific labels are additional project conventions, not a new core dispatch model.
 
-### 6. Validate Contract Output
+Do not create `docs/agents/workflow.md`, and do not add pointers to it. `WORKFLOW.md` is the single source of truth for the unattended runner contract. `docs/agents/issue-tracker.md`, when present, is for Matt Pocock engineering skills and issue-publishing conventions, not Symphony runtime configuration.
+
+### 5. Validate Contract Output
 
 Before reporting done, check the generated contract against the reference spec:
 
@@ -192,6 +147,6 @@ Before reporting done, check the generated contract against the reference spec:
 
 Do not report runtime conformance. Report the workflow contract status and any runtime assumptions separately.
 
-### 7. Done
+### 6. Done
 
 Report the files changed and the exact runtime contract recorded. If `WORKFLOW.md` was not written because required values were missing, report those missing values. Include `runtime conformance: not verified by this skill` unless a separate runner verification was actually performed.
