@@ -10,6 +10,7 @@ Skills I use daily for code work.
 - **[setup-linear-workflow](./setup-linear-workflow/SKILL.md)** — Configure an optional Linear-backed unattended agent workflow for projects that use Linear states and labels as an execution queue.
 - **[tdd](./tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
 - **[to-issues](./to-issues/SKILL.md)** — Break any plan, spec, or PRD into independently-grabbable issues using vertical slices.
+- **[to-prd-doc](./to-prd-doc/SKILL.md)** — Turn the current context into a repository PRD document under `docs/prd/` without creating a tracker work item.
 - **[to-prd](./to-prd/SKILL.md)** — Turn the current conversation context into a PRD and submit it to the configured issue tracker.
 - **[zoom-out](./zoom-out/SKILL.md)** — Tell the agent to zoom out and give broader context or a higher-level perspective on an unfamiliar section of code.
 - **[prototype](./prototype/SKILL.md)** — Build a throwaway prototype to flesh out a design — either a runnable terminal app for state/business-logic questions, or several radically different UI variations toggleable from one route.
