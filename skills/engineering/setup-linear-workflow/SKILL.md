@@ -49,6 +49,7 @@ Ask only for values that are missing or ambiguous. Confirm:
 - Workspace root and workspace preparation hooks, if this repo needs checkout/sync/population behavior.
 - Agent concurrency, max turns, and retry backoff, if different from runtime defaults.
 - Codex command, approval policy, sandbox policy, turn timeout, read timeout, and stall timeout, if the repo needs explicit values.
+- GitHub handoff requirements, if the workflow expects agents to push branches or create PRs. Record that the runner must provide `GH_TOKEN` or `GITHUB_TOKEN` through the process environment and that Codex turns must allow network access; do not write raw tokens.
 - User-input handling policy for unattended runs. Record this in the prompt body unless the project has a documented workflow extension field for it.
 
 Do not ask for PRD/AFK/HITL labels unless the repo already uses that taxonomy in `docs/agents/triage-labels.md`, existing Linear labels, or user-provided instructions. Those labels are project conventions for prompts and ticket writing; they are not core dispatch gates unless a documented workflow extension implements label filtering.
@@ -115,16 +116,18 @@ agent:
   max_retry_backoff_ms: 300000
   max_concurrent_agents_by_state: {}
 codex:
-  command: "codex app-server"
+  command: "codex --config shell_environment_policy.inherit=all app-server"
   approval_policy: "<implementation-defined>"
   thread_sandbox: "<implementation-defined>"
-  turn_sandbox_policy: "<implementation-defined>"
+  turn_sandbox_policy:
+    type: workspaceWrite
+    networkAccess: true
   turn_timeout_ms: 3600000
   read_timeout_ms: 5000
   stall_timeout_ms: 300000
 ```
 
-Do not write placeholder optional values into `WORKFLOW.md` as if they were real configuration. Use the optional block as a prompt for collecting concrete values.
+Do not write placeholder optional values into `WORKFLOW.md` as if they were real configuration. Use the optional block as a prompt for collecting concrete values. Codex environment inheritance and `networkAccess: true` are appropriate when the workflow requires CLI tools such as `gh` to read process-provided credentials and reach GitHub; omit them for workflows that intentionally run without inherited secrets or external network.
 
 ### 4. Update References
 
@@ -144,6 +147,7 @@ Before reporting done, check the generated contract against the reference spec:
 - Runtime config lives in front matter, not the Markdown prompt body.
 - Prompt body is present, or the report explicitly says the runner will need its default prompt behavior.
 - Approval, sandbox, and user-input policy are documented when the repo needs unattended behavior.
+- Workflows that require GitHub PR handoff document both prerequisites: Codex can access the network, and the runner process provides a valid `GH_TOKEN` or `GITHUB_TOKEN` without storing the token in `WORKFLOW.md`.
 
 Do not report runtime conformance. Report the workflow contract status and any runtime assumptions separately.
 
